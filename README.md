@@ -12,7 +12,7 @@
 
 ## 📖 About ReCentSYS ADI
 
-**ReCentSYS ADI** (Resource Centre System &ndash; Automated Digital Interface) is a comprehensive, lightweight, and modern web-based **Integrated Library System (ILS)** designed for schools, colleges, universities, research institutions, and corporate resource centres.
+**ReCentSYS ADI** (Resource Centre System) is a comprehensive, lightweight, and modern web-based **Integrated Library System (ILS)** designed for schools, colleges, universities, research institutions, and corporate resource centres. And, by the way, ADI stands for Ultra in Bahasa Malaysia.
 
 Engineered with simplicity, speed, and standard library science principles in mind, ReCentSYS ADI enables institutions to automate cataloging, circulation desk operations, patron management, serials tracking, and accreditation reporting without requiring expensive proprietary software or complex infrastructure.
 
