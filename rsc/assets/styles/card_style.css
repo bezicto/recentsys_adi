@@ -1,0 +1,325 @@
+/* Digital Patron Card Styles */
+
+/* Card Display Layout */
+.card-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem 0;
+}
+
+.flip-scene {
+    width: 440px;
+    max-width: 100%;
+    height: 275px;
+    perspective: 1200px;
+    margin: 0 auto;
+    cursor: pointer;
+}
+
+.digital-card {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 16px;
+    box-shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.18), 0 4px 10px -2px rgba(0, 0, 0, 0.08);
+}
+
+.digital-card.is-flipped {
+    transform: rotateY(180deg);
+}
+
+.card-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box;
+}
+
+/* Front Face Styling */
+.card-face-front {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 60%, #eff6ff 100%);
+    padding: 16px 18px 12px;
+}
+
+.card-header-brand {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 2px solid #2563eb;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+}
+
+.brand-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #1e3a8a;
+    line-height: 1.2;
+    letter-spacing: -0.2px;
+}
+
+.brand-sub {
+    font-size: 0.72rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.card-badge-type {
+    background: #1e40af;
+    color: #ffffff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.card-front-body {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.card-avatar-box {
+    width: 82px;
+    height: 82px;
+    min-width: 82px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 2px solid #2563eb;
+    box-shadow: 0 3px 8px rgba(37, 99, 235, 0.2);
+    background: #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-avatar-placeholder-icon {
+    font-size: 2.25rem;
+}
+
+.card-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.card-info-box {
+    flex: 1;
+    min-width: 0;
+}
+
+.card-patron-name {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 3px;
+}
+
+.card-patron-id-large {
+    font-size: 1.35rem;
+    font-weight: 800;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    color: #1e40af;
+    letter-spacing: 1px;
+    line-height: 1.1;
+    margin-bottom: 4px;
+}
+
+.card-patron-dept {
+    font-size: 0.72rem;
+    color: #475569;
+    line-height: 1.25;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.card-barcode-wrap {
+    width: 100%;
+    background: #ffffff;
+    padding: 4px 8px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+}
+
+.card-barcode-wrap svg {
+    max-width: 100%;
+    height: 34px !important;
+}
+
+/* Back Face Styling */
+.card-face-back {
+    transform: rotateY(180deg);
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: #f8fafc;
+    padding: 0;
+}
+
+.card-magstripe {
+    width: 100%;
+    height: 38px;
+    background: #020617;
+    margin-top: 14px;
+    border-top: 1px solid #334155;
+    border-bottom: 1px solid #334155;
+}
+
+.card-back-content {
+    padding: 10px 18px 14px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+}
+
+.card-qr-box {
+    background: #ffffff;
+    padding: 6px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 105px;
+}
+
+.card-qr-box canvas, .card-qr-box img {
+    width: 92px !important;
+    height: 92px !important;
+    display: block;
+}
+
+.card-back-text {
+    flex: 1;
+    font-size: 0.72rem;
+    color: #cbd5e1;
+    line-height: 1.35;
+}
+
+.card-back-text strong {
+    color: #ffffff;
+}
+
+.card-back-desc {
+    font-size: 0.68rem;
+    color: #94a3b8;
+}
+
+.card-back-powered {
+    font-size: 0.65rem;
+    color: #64748b;
+}
+
+.card-back-id-display {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #60a5fa;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.card-back-footer {
+    border-top: 1px solid #334155;
+    padding: 6px 18px;
+    font-size: 0.65rem;
+    color: #94a3b8;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+/* Dual View Mode for Side-by-Side preview */
+.dual-view-container {
+    display: none;
+    gap: 24px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 1.5rem 0;
+}
+
+.dual-view-container .digital-card {
+    width: 440px;
+    height: 275px;
+    transform: none !important;
+}
+
+.dual-view-container .card-face-front,
+.dual-view-container .card-face-back {
+    transform: none !important;
+    position: relative;
+}
+
+.print-cut-guide {
+    display: none;
+}
+
+/* Print Media Styles */
+@media print {
+    body {
+        background: #ffffff !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    .header-bar, .preview-toolbar, .no-print, .card-actions-bar, #footerbar {
+        display: none !important;
+    }
+    .app-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    .card-stage {
+        padding: 0 !important;
+    }
+    .flip-scene {
+        display: none !important;
+    }
+    .dual-view-container {
+        display: flex !important;
+        gap: 20px !important;
+        margin: 20px auto !important;
+        page-break-inside: avoid;
+    }
+    .dual-view-container .digital-card {
+        box-shadow: none !important;
+        border: 1px dashed #94a3b8 !important;
+    }
+    .print-cut-guide {
+        display: block !important;
+        text-align: center;
+        font-size: 9pt;
+        color: #64748b;
+        margin-top: 15px;
+    }
+}
