@@ -126,7 +126,7 @@ This guide is written especially for new users who may have limited web developm
 1. In the Laragon window, click the big **"Start All"** button.
 2. Apache and MySQL/MariaDB will start immediately.
 
-#### Step 4: Import Database Schema (`recentsys_db_install.sql`)
+#### Step 4: Import Database Schema (`recentsys_db.sql`)
 Laragon includes **HeidiSQL**, a fast and intuitive database management tool that connects with 1 click:
 
 1. In Laragon, click the **Database** button on the bottom toolbar.
@@ -136,11 +136,11 @@ Laragon includes **HeidiSQL**, a fast and intuitive database management tool tha
 5. Click once on your newly created `recentsys_db` in the left panel to highlight it.
 6. In the top menu, go to **File** &rarr; **Load SQL file...** (or press `Ctrl + O`).
 7. Select the database schema file:  
-   👉 **`recentsys_db_install.sql`**
+   👉 **`recentsys_db.sql`**
 8. Click the blue **Execute SQL** / Run button (or press `F9`).  
    *All tables and schema will be imported in a few seconds!*
 
-> **Alternative via phpMyAdmin:** If you prefer phpMyAdmin, simply right-click anywhere in Laragon &rarr; **MySQL** &rarr; **phpMyAdmin**, create `recentsys_db`, and import `recentsys_db_install.sql` under the **Import** tab.
+> **Alternative via phpMyAdmin:** If you prefer phpMyAdmin, simply right-click anywhere in Laragon &rarr; **MySQL** &rarr; **phpMyAdmin**, create `recentsys_db`, and import `recentsys_db.sql` under the **Import** tab.
 
 #### Step 5: Configure Database Connection & Settings
 1. Open the file `C:\laragon\www\recentsys\site\config.php` in your favorite text editor (Notepad++, VS Code, etc.).
@@ -169,7 +169,7 @@ Laragon includes **HeidiSQL**, a fast and intuitive database management tool tha
 3. To open the administration and circulation desk, click **Admin Login** (or go to `http://recentsys.test/rsc/`).
 4. Log in using the default administrator credentials:
    * **Username:** `admin`
-   * **Password:** `1` *(or the default password defined in your `recentsys_db_install.sql`)*
+   * **Password:** `1` *(or the default password defined in your `recentsys_db.sql`)*
 
 ---
 
@@ -197,9 +197,9 @@ EXIT;
 ```
 
 #### 3. Import the Database Schema
-Import `recentsys_db_install.sql` into the newly created database:
+Import `recentsys_db.sql` into the newly created database:
 ```bash
-mysql -u recentsys_user -p recentsys_db < /path/to/recentsys_db_install.sql
+mysql -u recentsys_user -p recentsys_db < database_install_script/recentsys_db.sql
 ```
 
 #### 4. Deploy Files & Set Folder Permissions
@@ -343,7 +343,7 @@ ReCentSYS ADI utilizes a clean separation between the central application engine
 recentsys/
 │
 ├── index.php                 # Root application gateway (redirects to active site)
-├── recentsys_db_install.sql  # MariaDB / MySQL database installation schema
+├── database_install_script/  # Initial database installation schema (recentsys_db.sql)
 │
 ├── rsc/                      # Core Application Engine
 │   ├── index.php             # Staff login and patron portal gateway
