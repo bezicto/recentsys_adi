@@ -37,18 +37,51 @@
                 $bahan_id, $accession_num, $status, $volume, $issue, $year, $is_reference,
                 $invoice_a, $invoice_b, $invoice_c, $addedon, $lastchange
             );
+            $added_accessions = [];
             for ($x = 1; $x <= $copies; $x++) {
                 $last_accession_num++;
                 $accession_num = sprintf("%010d", $last_accession_num);
+                $added_accessions[] = $accession_num;
                 mysqli_stmt_execute($stmt);
             }
             mysqli_stmt_close($stmt);
-            $_SESSION['flash_copies_msg'] = ['type' => 'success', 'text' => "$copies copy/copies have been successfully registered into the catalog!"];
+            $accStr = implode(', ', $added_accessions);
+            $_SESSION['flash_copies_msg'] = [
+                'type' => 'success', 
+                'text' => "<strong>$copies copy/copies</strong> successfully registered into the catalog! Accession Barcode(s): <strong>$accStr</strong>",
+                'last_bahan_id' => $bahan_id
+            ];
         } else {
             $_SESSION['flash_copies_msg'] = ['type' => 'danger', 'text' => 'Input cancelled. Please ensure required information is provided.'];
         }
         header("Location: copies_add.php?bahan_id=" . $bahan_id);
         exit;
+    }
+
+    $csrfToken = htmlspecialchars($_SESSION['token'] ?? '', ENT_QUOTES, 'UTF-8');
+    $bahan_id_param = isset($_REQUEST["bahan_id"]) && is_numeric($_REQUEST["bahan_id"]) ? (int)$_REQUEST["bahan_id"] : 0;
+    $parent_title = '';
+    $parent_issn = '';
+    $parent_type = '';
+    $is_serial = false;
+
+    if ($bahan_id_param > 0) {
+        $stmtP = mysqli_prepare($GLOBALS["conn"], "SELECT `38title`, `38issn`, `39type` FROM eg_item WHERE id = ?");
+        if ($stmtP) {
+            mysqli_stmt_bind_param($stmtP, "i", $bahan_id_param);
+            mysqli_stmt_execute($stmtP);
+            $resP = mysqli_stmt_get_result($stmtP);
+            if ($resP && $rowP = mysqli_fetch_assoc($resP)) {
+                $parent_title = $rowP['38title'] ?? '';
+                $parent_issn = str_replace(['-', '–', '—'], '', trim($rowP['38issn'] ?? ''));
+                $parent_type = trim((string)($rowP['39type'] ?? ''));
+                $parent_type_name = is_numeric($parent_type) ? idToType($parent_type) : $parent_type;
+                if (!empty($parent_issn) || stripos($parent_type, 'serial') !== false || stripos($parent_type_name, 'serial') !== false || stripos($parent_type_name, 'bersiri') !== false || stripos($parent_type_name, 'journal') !== false || stripos($parent_type_name, 'majalah') !== false || stripos($parent_type_name, 'periodical') !== false) {
+                    $is_serial = true;
+                }
+            }
+            mysqli_stmt_close($stmtP);
+        }
     }
 ?>
 <!DOCTYPE HTML>
@@ -56,66 +89,38 @@
 
 <head>
     <meta charset="utf-8">
-    <title><?php echo htmlspecialchars($product_name, ENT_QUOTES, 'UTF-8');?> : Add Copies</title>
+    <title><?php echo htmlspecialchars($product_name, ENT_QUOTES, 'UTF-8');?> : <?php echo $is_serial ? 'Check-in Serial Issue' : 'Add Copies'; ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="../<?php echo htmlspecialchars($mini_icon_path, ENT_QUOTES, 'UTF-8');?>" rel="icon" type="image/png" />
     <link href="../assets/styles/style.css" rel="stylesheet" type="text/css">
-    <script>
-        window.onunload = refreshParent;
-        function refreshParent() {
-            try {
-                if (window.opener && !window.opener.closed) {
-                    window.opener.location.reload();
-                }
-            } catch(e) {}
-            try {
-                if (window.parent && window.parent !== window && window.parent.closeAppModal) {
-                    window.parent.location.reload();
-                }
-            } catch(e) {}
-        }
-    </script>
+    <link rel="stylesheet" href="../assets/fontawesome/css/all.min.css">
 </head>
 
 <body>
     <div class="container-narrow mt-3">
         <?php
+            $hasSuccess = false;
             if (!empty($_SESSION['flash_copies_msg'])) {
                 $cmsg = $_SESSION['flash_copies_msg'];
                 $ctype = htmlspecialchars($cmsg['type'] ?? 'info', ENT_QUOTES, 'UTF-8');
                 $ctext = $cmsg['text'] ?? '';
-                echo "<div class='alert alert-{$ctype}'>{$ctext}</div>";
+                $lastBahan = (int)($cmsg['last_bahan_id'] ?? 0);
+                if ($ctype === 'success') {
+                    $hasSuccess = true;
+                }
+                echo "<div class='alert alert-{$ctype} mb-3'>";
+                echo "<div>{$ctext}</div>";
+                echo "<div class='mt-2 pt-2 border-top border-light-subtle d-flex justify-content-end'>";
+                echo "<button type='button' class='btn btn-sm btn-secondary' onclick=\"if(window.parent && window.parent.closeAppModal) { window.parent.closeAppModal(true); } else { window.close(); }\">Done</button>";
+                echo "</div>";
+                echo "</div>";
                 unset($_SESSION['flash_copies_msg']);
             }
-            $csrfToken = htmlspecialchars($_SESSION['token'] ?? '', ENT_QUOTES, 'UTF-8');
-            $bahan_id_param = isset($_REQUEST["bahan_id"]) && is_numeric($_REQUEST["bahan_id"]) ? (int)$_REQUEST["bahan_id"] : 0;
-            $parent_title = '';
-            $parent_issn = '';
-            $parent_type = '';
-            $is_serial = false;
-
-            if ($bahan_id_param > 0) {
-                $stmtP = mysqli_prepare($GLOBALS["conn"], "SELECT `38title`, `38issn`, `39type` FROM eg_item WHERE id = ?");
-                if ($stmtP) {
-                    mysqli_stmt_bind_param($stmtP, "i", $bahan_id_param);
-                    mysqli_stmt_execute($stmtP);
-                    $resP = mysqli_stmt_get_result($stmtP);
-                    if ($resP && $rowP = mysqli_fetch_assoc($resP)) {
-                        $parent_title = $rowP['38title'] ?? '';
-                        $parent_issn = str_replace(['-', '–', '—'], '', trim($rowP['38issn'] ?? ''));
-                        $parent_type = trim((string)($rowP['39type'] ?? ''));
-                        $parent_type_name = is_numeric($parent_type) ? idToType($parent_type) : $parent_type;
-                        if (!empty($parent_issn) || stripos($parent_type, 'serial') !== false || stripos($parent_type_name, 'serial') !== false || stripos($parent_type_name, 'bersiri') !== false || stripos($parent_type_name, 'journal') !== false || stripos($parent_type_name, 'majalah') !== false || stripos($parent_type_name, 'periodical') !== false) {
-                            $is_serial = true;
-                        }
-                    }
-                    mysqli_stmt_close($stmtP);
-                }
-            }
         ?>
+        <?php if (!$hasSuccess): ?>
             <div class="card">
                 <div class="card-header">
-                    <strong>Batch Add Physical Copies <?php if ($is_serial): ?><span class="badge badge-info ms-2">Serial / Periodical</span><?php endif; ?></strong>
+                    <strong><?php echo $is_serial ? 'Check-in Serial Issue (Cardex)' : 'Batch Add Physical Copies'; ?> <?php if ($is_serial): ?><span class="badge badge-info ms-2">Serial / Periodical</span><?php endif; ?></strong>
                 </div>
                 <div class="card-body">
                     <?php if (!empty($parent_title)): ?>
@@ -214,9 +219,10 @@
                 </div>
             </div>
         
-        <div class="text-center my-3">
-            <a class="btn btn-secondary btn-sm" href="#" onclick="if(window.parent && window.parent.closeAppModal) { window.parent.closeAppModal(true); } else { window.close(); }">&times; Close</a>
-        </div>
+            <div class="text-center my-3">
+                <a class="btn btn-secondary btn-sm" href="#" onclick="if(window.parent && window.parent.closeAppModal) { window.parent.closeAppModal(true); } else { window.close(); }">&times; Close</a>
+            </div>
+        <?php endif; ?>
     </div>
 </body>
 </html>

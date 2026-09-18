@@ -439,7 +439,7 @@ CREATE TABLE `eg_selfreg_tokens` (
   `used_at` int(11) DEFAULT NULL,
   `registered_username` varchar(255) DEFAULT NULL,
   `registered_name` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_swedish_ci;
 
 -- --------------------------------------------------------
 

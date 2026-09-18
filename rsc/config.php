@@ -1,19 +1,4 @@
 <?php
-    if (!isset($_SESSION['config_locality'])) {
-        $candidatePaths = [
-            dirname(__DIR__) . DIRECTORY_SEPARATOR . "site" . DIRECTORY_SEPARATOR . "config.php",
-            dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "site" . DIRECTORY_SEPARATOR . "config.php",
-            __DIR__ . DIRECTORY_SEPARATOR . "../site/config.php"
-        ];
-        foreach ($candidatePaths as $candidate) {
-            if (is_file($candidate)) {
-                $_SESSION["parent_dir"] = "site";
-                $_SESSION["config_locality"] = $candidate;
-                break;
-            }
-        }
-    }
-
     if (isset($_SESSION['config_locality']) && is_file($_SESSION['config_locality'])) {
         include_once $_SESSION['config_locality'];
 
@@ -29,7 +14,7 @@
 
         //version info
         $core_product = "ReCentSYS ADI";
-        $version_num = "V8 Build 1";
+        $version_num = "V8 Build 2";
 
         //icon and logo paths
         $mini_icon_path = "../".$_SESSION["parent_dir"].$mini_icon;

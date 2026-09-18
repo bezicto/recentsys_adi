@@ -749,6 +749,14 @@
             }
         }
 
+        function closeDuplicateModal() {
+            var modal = document.getElementById('duplicateItemModal');
+            if (modal) {
+                modal.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        }
+
         function showList() {
             openAppModal("shselector.php?clr=reg", "Select Subject Heading", "modal-md");
         }
@@ -881,43 +889,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                            <tr>
-                                <td><strong>Material Type *</strong></td>
-                                <td class="text-center">-</td>
-                                <td>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <span class="text-muted font-bold">|a</span>
-                                        <select name="jenis" required>
-                                        <?php
-                                            $queryB = "select `38typeid`, `38type` from eg_type";
-                                            $resultB = mysqli_query($GLOBALS["conn"], $queryB);
-                                                                
-                                            while ($myrow=mysqli_fetch_array($resultB)) {
-                                                $typeB=$myrow["38type"];
-                                                $typeBid=$myrow["38typeid"];
-                                                $selected = ($val_jenis == "$typeBid") ? "selected" : "";
-                                                echo "<option value='$typeBid' $selected>$typeB</option>";
-                                            }
-                                        ?>
-                                        </select>
-                                    </div>
-                                </td>
-                            </tr>
-                            
-                            <tr>
-                                <td><strong>Subject Heading</strong></td>
-                                <td class="text-center">-</td>
-                                <td>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <span class="text-muted font-bold">|a</span>
-                                        <input type="text" name="subjectheading" readonly="readonly" maxlength="150" value="<?php echo htmlspecialchars($val_subjectheading, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Select using the [...] button"/>
-                                        <input type="button" class="btn btn-secondary btn-sm" name="subjectheadingButton" value="..." onClick="showList()" />
-                                        <input type="button" class="btn btn-primary btn-sm" name="gotoSHButton" value="+New" onClick="openSHAdd()" />
-                                        <input type="button" class="btn btn-danger btn-sm" name="clearSH" value="Clear" onClick="document.someform.subjectheading.value='';">
-                                    </div>
-                                </td>
-                            </tr>
-                        
+
                             <tr>
                                 <td><strong><?php echo $tag_020;?></strong></td>
                                 <td class="text-center">**</td>
@@ -961,6 +933,43 @@
                                 </td>
                             </tr>
 
+                            <tr>
+                                <td><strong>Material Type *</strong></td>
+                                <td class="text-center">-</td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="text-muted font-bold">|a</span>
+                                        <select name="jenis" required>
+                                        <?php
+                                            $queryB = "select `38typeid`, `38type` from eg_type";
+                                            $resultB = mysqli_query($GLOBALS["conn"], $queryB);
+                                                                
+                                            while ($myrow=mysqli_fetch_array($resultB)) {
+                                                $typeB=$myrow["38type"];
+                                                $typeBid=$myrow["38typeid"];
+                                                $selected = ($val_jenis == "$typeBid") ? "selected" : "";
+                                                echo "<option value='$typeBid' $selected>$typeB</option>";
+                                            }
+                                        ?>
+                                        </select>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td><strong>Subject Heading</strong></td>
+                                <td class="text-center">-</td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="text-muted font-bold">|a</span>
+                                        <input type="text" name="subjectheading" readonly="readonly" maxlength="150" value="<?php echo htmlspecialchars($val_subjectheading, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Select using the [...] button"/>
+                                        <input type="button" class="btn btn-secondary btn-sm" name="subjectheadingButton" value="..." onClick="showList()" />
+                                        <input type="button" class="btn btn-primary btn-sm" name="gotoSHButton" value="+New" onClick="openSHAdd()" />
+                                        <input type="button" class="btn btn-danger btn-sm" name="clearSH" value="Clear" onClick="document.someform.subjectheading.value='';">
+                                    </div>
+                                </td>
+                            </tr>
+                        
                             <tr>
                                 <td><strong><?php echo $tag_041;?></strong></td>
                                 <td class="text-center">**</td>
@@ -1366,14 +1375,359 @@
         </div>
     </div>
 
+    <!-- Duplicate Item / Cardex Serial Detection Modal -->
+    <div id="duplicateItemModal" class="modal-backdrop" onclick="if(event.target===this) closeDuplicateModal();">
+        <div class="modal-dialog modal-md" style="max-width: 580px; overflow: hidden; border-radius: var(--radius-lg, 12px); box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);">
+            <div id="dupModalHeader" class="modal-header" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-bottom: 1px solid #fcd34d; padding: 1rem 1.25rem;">
+                <div class="d-flex align-items-center gap-2">
+                    <div id="dupModalIconWrap" style="width: 36px; height: 36px; border-radius: 50%; background: #d97706; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;">
+                        <i id="dupModalIcon" class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title" id="dupModalTitle" style="color: #92400e; font-weight: 700; font-size: 1.05rem; margin: 0;">Item Already Exists in Database</h5>
+                        <small id="dupModalSubtitle" style="color: #b45309; font-size: 0.8rem; font-weight: 500;">Duplicate Record Prevention Alert</small>
+                    </div>
+                </div>
+                <button type="button" class="modal-close-btn" onclick="closeDuplicateModal();" title="Close modal" style="font-size: 1.5rem; line-height: 1; border: none; background: transparent; cursor: pointer; color: #92400e;">&times;</button>
+            </div>
+            
+            <div class="modal-body" style="padding: 1.25rem; background: #ffffff; max-height: 75vh; overflow-y: auto;">
+                <!-- Alert explanation box -->
+                <div id="dupNoticeBanner" class="p-3 mb-3 rounded" style="background: #fffbeb; border: 1px solid #fef3c7; color: #92400e; font-size: 0.88rem; line-height: 1.45;">
+                    <span id="dupNoticeText">A title matching this identifier is already registered in your library catalog.</span>
+                </div>
+
+                <!-- Existing Item Summary Card -->
+                <div class="card p-3 mb-3" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span id="dupTypeBadge" class="badge" style="background: #0284c7; color: #fff; font-size: 0.75rem; padding: 4px 8px; border-radius: 4px; font-weight: 600;">
+                            <i class="fa-solid fa-book me-1"></i> Book / Monograph
+                        </span>
+                        <span class="text-muted small font-monospace">Record ID: #<strong id="dupItemId" class="text-primary">--</strong></span>
+                    </div>
+                    <h4 id="dupItemTitle" style="font-size: 1.1rem; font-weight: 700; color: #0f172a; margin-bottom: 0.35rem; line-height: 1.35;">Item Title</h4>
+                    <div class="text-muted small mb-2" id="dupItemAuthorWrap">
+                        <i class="fa-solid fa-user-pen me-1 text-secondary"></i> Author: <span id="dupItemAuthor" class="fw-semibold text-dark">--</span>
+                    </div>
+                    
+                    <div class="d-flex flex-wrap gap-2 align-items-center mt-2 pt-2 border-top border-light-subtle small">
+                        <div style="background: #ffffff; padding: 4px 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                            <i class="fa-solid fa-barcode me-1 text-primary"></i> <span id="dupIdLabel">ISBN</span>: <strong id="dupItemIdentifier">--</strong>
+                        </div>
+                        <div style="background: #ffffff; padding: 4px 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                            <i class="fa-solid fa-tag me-1 text-secondary"></i> Call No: <strong id="dupItemCallNum">--</strong>
+                        </div>
+                        <div style="background: #ffffff; padding: 4px 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                            <i class="fa-solid fa-layer-group me-1 text-success"></i> Registered Copies: <strong id="dupItemCopiesCount" class="text-success">0</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cardex Serials Explanatory Note -->
+                <div id="dupCardexInfoBox" style="display: none; background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; padding: 0.85rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.85rem; line-height: 1.45;">
+                    <div class="d-flex align-items-start gap-2">
+                        <i class="fa-solid fa-newspaper fa-lg text-primary mt-1"></i>
+                        <div>
+                            <strong>Cardex Issue Check-in Required:</strong> In serials &amp; periodical management, each physical copy corresponds to an issue designation (Volume, Issue/No., Month/Year, Reference Status). Clicking below opens the Issue Check-in interface with these fields ready for input.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Prompt -->
+                <div class="text-muted small mb-2 fw-semibold" id="dupActionPrompt">What would you like to do?</div>
+                
+                <!-- ISBN Actions (Books) -->
+                <div id="dupIsbnActions" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <button type="button" id="btn_dup_add_one_copy" class="btn btn-success d-flex align-items-center justify-content-center gap-2 py-2" style="font-weight: 600;">
+                        <i class="fa-solid fa-circle-plus fa-lg"></i>
+                        <span id="btn_dup_add_one_text">Add 1 Copy to This Record Instantly</span>
+                    </button>
+                </div>
+
+                <!-- ISSN Actions (Serials) -->
+                <div id="dupIssnActions" style="display: none; flex-direction: column; gap: 0.5rem;">
+                    <button type="button" id="btn_dup_checkin_serial" class="btn btn-primary d-flex align-items-center justify-content-center gap-2 py-2" style="font-weight: 600; background: #0f766e; border-color: #0f766e;">
+                        <i class="fa-solid fa-file-import fa-lg"></i>
+                        <span>Check-in Serial Issue (Cardex)</span>
+                    </button>
+                </div>
+                
+                <!-- Quick Add Loading Alert -->
+                <div id="dupQuickAddLoading" class="alert alert-info mt-3 mb-0 p-3" style="display: none;">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-spinner fa-spin fa-xl text-primary"></i>
+                        <div>
+                            <strong class="d-block">Registering Copy...</strong>
+                            <span class="small text-muted">Please wait while the copy is added.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Add Success Alert -->
+                <div id="dupQuickAddSuccess" class="alert alert-success mt-3 mb-0 p-3" style="display: none;">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-circle-check fa-xl text-success"></i>
+                        <div>
+                            <strong class="d-block" id="dupSuccessTitle">Copy Added Successfully!</strong>
+                            <span id="dupSuccessMsg" class="small">Accession barcode generated.</span>
+                        </div>
+                    </div>
+                    <div class="mt-2 pt-2 border-top border-success-subtle d-flex gap-2 justify-content-end align-items-center flex-wrap">
+                        <a id="btn_dup_view_details" href="#" class="btn btn-sm btn-primary"><i class="fa-solid fa-circle-info me-1"></i> View Record Details</a>
+                        <button type="button" id="btn_dup_view_copies" class="btn btn-sm btn-outline-secondary">View All Copies</button>
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="closeDuplicateModal();">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Bibliographic Auto-Population Client Engine -->
     <script type="text/javascript">
     (function() {
+        var currentEditId = <?php echo (int)$edit_id; ?>;
         var btnIsbn = document.getElementById('btn_fetch_isbn');
         var btnIssn = document.getElementById('btn_fetch_issn');
         var inputIsbn = document.getElementById('isbn_input');
         var inputIssn = document.getElementById('issn_input');
         var alertBox = document.getElementById('fetch_status_alert');
+
+        // Duplicate item modal elements
+        var currentDuplicateMatch = null;
+        var dupModal = document.getElementById('duplicateItemModal');
+        var dupHeader = document.getElementById('dupModalHeader');
+        var dupIconWrap = document.getElementById('dupModalIconWrap');
+        var dupIcon = document.getElementById('dupModalIcon');
+        var dupTitle = document.getElementById('dupModalTitle');
+        var dupSubtitle = document.getElementById('dupModalSubtitle');
+        var dupNoticeText = document.getElementById('dupNoticeText');
+        var dupTypeBadge = document.getElementById('dupTypeBadge');
+        var dupItemId = document.getElementById('dupItemId');
+        var dupItemTitle = document.getElementById('dupItemTitle');
+        var dupItemAuthor = document.getElementById('dupItemAuthor');
+        var dupIdLabel = document.getElementById('dupIdLabel');
+        var dupItemIdentifier = document.getElementById('dupItemIdentifier');
+        var dupItemCallNum = document.getElementById('dupItemCallNum');
+        var dupItemCopiesCount = document.getElementById('dupItemCopiesCount');
+        var dupCardexInfoBox = document.getElementById('dupCardexInfoBox');
+        var dupActionPrompt = document.getElementById('dupActionPrompt');
+        var dupIsbnActions = document.getElementById('dupIsbnActions');
+        var dupIssnActions = document.getElementById('dupIssnActions');
+        var dupQuickAddLoading = document.getElementById('dupQuickAddLoading');
+        var dupQuickAddSuccess = document.getElementById('dupQuickAddSuccess');
+        var btnAddOneCopy = document.getElementById('btn_dup_add_one_copy');
+        var btnAddOneText = document.getElementById('btn_dup_add_one_text');
+        var btnCheckinSerial = document.getElementById('btn_dup_checkin_serial');
+        var btnViewCopies = document.getElementById('btn_dup_view_copies');
+
+        function showDuplicateModal(type, identifier, localMatch) {
+            if (!dupModal || !localMatch) return;
+            currentDuplicateMatch = localMatch;
+
+            // Reset quick add success and prompt state
+            if (dupQuickAddSuccess) dupQuickAddSuccess.style.display = 'none';
+            if (dupQuickAddLoading) dupQuickAddLoading.style.display = 'none';
+            if (dupActionPrompt) dupActionPrompt.style.setProperty('display', 'block', 'important');
+            if (btnAddOneCopy) {
+                btnAddOneCopy.disabled = false;
+                btnAddOneCopy.style.display = 'flex';
+                if (btnAddOneText) btnAddOneText.textContent = 'Add 1 Copy to This Record Instantly';
+            }
+
+            // If triggered by ISBN -> strictly Book mode (never show Cardex check-in)
+            // If triggered by ISSN -> strictly Serial mode (show only Cardex check-in)
+            var isSerial = (type === 'issn');
+
+            if (isSerial) {
+                // Serial / Periodical Presentation
+                if (dupHeader) {
+                    dupHeader.style.background = 'linear-gradient(135deg, #ccfbf1 0%, #99f6e4 100%)';
+                    dupHeader.style.borderBottom = '1px solid #5eead4';
+                }
+                if (dupIconWrap) dupIconWrap.style.background = '#0f766e';
+                if (dupIcon) dupIcon.className = 'fa-solid fa-newspaper';
+                if (dupTitle) {
+                    dupTitle.textContent = 'Serial Publication Already Exists in Catalog';
+                    dupTitle.style.color = '#115e59';
+                }
+                if (dupSubtitle) {
+                    dupSubtitle.textContent = 'Cardex Serial Master Record Detected';
+                    dupSubtitle.style.color = '#0f766e';
+                }
+                if (dupNoticeText) {
+                    dupNoticeText.textContent = 'This serial publication already exists in the catalog database. In serials management, new arrivals require Cardex issue check-in (Volume, Issue, Year) before copies can be registered.';
+                }
+                if (dupTypeBadge) {
+                    dupTypeBadge.style.background = '#0f766e';
+                    dupTypeBadge.innerHTML = '<i class="fa-solid fa-newspaper me-1"></i> Serial / Periodical';
+                }
+                if (dupIdLabel) dupIdLabel.textContent = 'ISSN';
+                if (dupCardexInfoBox) {
+                    dupCardexInfoBox.style.setProperty('display', 'block', 'important');
+                }
+                if (dupIsbnActions) {
+                    dupIsbnActions.style.setProperty('display', 'none', 'important');
+                }
+                if (dupIssnActions) {
+                    dupIssnActions.style.setProperty('display', 'flex', 'important');
+                }
+            } else {
+                // Book / Monograph Presentation
+                if (dupHeader) {
+                    dupHeader.style.background = 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)';
+                    dupHeader.style.borderBottom = '1px solid #fcd34d';
+                }
+                if (dupIconWrap) dupIconWrap.style.background = '#d97706';
+                if (dupIcon) dupIcon.className = 'fa-solid fa-book-bookmark';
+                if (dupTitle) {
+                    dupTitle.textContent = 'Book Already Exists in Library Catalog';
+                    dupTitle.style.color = '#92400e';
+                }
+                if (dupSubtitle) {
+                    dupSubtitle.textContent = 'Duplicate Record Prevention Alert';
+                    dupSubtitle.style.color = '#b45309';
+                }
+                if (dupNoticeText) {
+                    dupNoticeText.textContent = 'A book matching this ISBN already exists in your library database. Would you like to add another copy to this record instead of creating a duplicate?';
+                }
+                if (dupTypeBadge) {
+                    dupTypeBadge.style.background = '#0284c7';
+                    dupTypeBadge.innerHTML = '<i class="fa-solid fa-book me-1"></i> ' + escapeHtml(localMatch.type_name || 'Book / Monograph');
+                }
+                if (dupIdLabel) dupIdLabel.textContent = 'ISBN';
+                if (dupCardexInfoBox) {
+                    dupCardexInfoBox.style.setProperty('display', 'none', 'important');
+                }
+                if (dupIsbnActions) {
+                    dupIsbnActions.style.setProperty('display', 'flex', 'important');
+                }
+                if (dupIssnActions) {
+                    dupIssnActions.style.setProperty('display', 'none', 'important');
+                }
+            }
+
+            // Fill Record Details
+            if (dupItemId) dupItemId.textContent = localMatch.id || '--';
+            if (dupItemTitle) dupItemTitle.textContent = localMatch.title || '(Untitled Record)';
+            if (dupItemAuthor) dupItemAuthor.textContent = localMatch.author || 'N/A';
+            if (dupItemIdentifier) {
+                var dispId = (type === 'isbn') ? (localMatch.isbn || identifier) : (localMatch.issn || identifier);
+                dupItemIdentifier.textContent = dispId || '--';
+            }
+            if (dupItemCallNum) dupItemCallNum.textContent = localMatch.callnum || 'Not assigned';
+            if (dupItemCopiesCount) {
+                var cCount = parseInt(localMatch.copies_count, 10) || 0;
+                dupItemCopiesCount.textContent = cCount + (cCount === 1 ? ' copy registered' : ' copies registered');
+            }
+
+            dupModal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Attach Duplicate Modal Action Listeners
+        if (btnAddOneCopy) {
+            btnAddOneCopy.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (!currentDuplicateMatch || !currentDuplicateMatch.id) return;
+                
+                // Immediately hide "What would you like to do?" prompt and action button
+                if (dupActionPrompt) dupActionPrompt.style.setProperty('display', 'none', 'important');
+                if (dupIsbnActions) dupIsbnActions.style.setProperty('display', 'none', 'important');
+                if (dupQuickAddLoading) dupQuickAddLoading.style.display = 'block';
+
+                var addUrl = 'api/quick-add-copy.php?bahan_id=' + encodeURIComponent(currentDuplicateMatch.id);
+                fetch(addUrl, {
+                    method: 'POST',
+                    headers: { 'Accept': 'application/json' }
+                })
+                .then(function(res) {
+                    return res.json().then(function(data) {
+                        return { ok: res.ok, data: data };
+                    });
+                })
+                .then(function(result) {
+                    if (dupQuickAddLoading) dupQuickAddLoading.style.display = 'none';
+
+                    if (!result.ok || result.data.status !== 'success') {
+                        alert(result.data.message || 'Error registering copy.');
+                        if (dupActionPrompt) dupActionPrompt.style.setProperty('display', 'block', 'important');
+                        if (dupIsbnActions) dupIsbnActions.style.setProperty('display', 'flex', 'important');
+                        return;
+                    }
+
+                    var newCount = result.data.copies_count;
+                    currentDuplicateMatch.copies_count = newCount;
+                    if (dupItemCopiesCount) {
+                        dupItemCopiesCount.textContent = newCount + (newCount === 1 ? ' copy registered' : ' copies registered');
+                    }
+                    
+                    if (dupQuickAddSuccess) {
+                        var msgEl = document.getElementById('dupSuccessMsg');
+                        if (msgEl) {
+                            msgEl.innerHTML = '<strong>' + escapeHtml(result.data.message) + '</strong> &bull; Current Total Copies: <span class="badge badge-success">' + escapeHtml(newCount) + '</span>';
+                        }
+                        var btnViewDet = document.getElementById('btn_dup_view_details');
+                        if (btnViewDet && currentDuplicateMatch.id) {
+                            btnViewDet.href = '../details.php?det=' + encodeURIComponent(currentDuplicateMatch.id);
+                        }
+                        dupQuickAddSuccess.style.display = 'block';
+                    }
+                    showAlert('success', '<strong>Copy Added!</strong> ' + escapeHtml(result.data.message));
+                })
+                .catch(function(err) {
+                    if (dupQuickAddLoading) dupQuickAddLoading.style.display = 'none';
+                    alert('Network error while adding copy: ' + err.message);
+                    if (dupActionPrompt) dupActionPrompt.style.setProperty('display', 'block', 'important');
+                    if (dupIsbnActions) dupIsbnActions.style.setProperty('display', 'flex', 'important');
+                });
+            });
+        }
+
+        if (btnCheckinSerial) {
+            btnCheckinSerial.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (!currentDuplicateMatch || !currentDuplicateMatch.id) return;
+                var id = currentDuplicateMatch.id;
+                closeDuplicateModal();
+                openAppModal('copies_add.php?bahan_id=' + id, 'Check-in Serial Issue / Add Copies (#' + id + ')', 'modal-md');
+            });
+        }
+
+        if (btnViewCopies) {
+            btnViewCopies.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (!currentDuplicateMatch || !currentDuplicateMatch.id) return;
+                var id = currentDuplicateMatch.id;
+                closeDuplicateModal();
+                openAppModal('reg_copies.php?id=' + id, 'Manage Copies (#' + id + ')', 'modal-lg');
+            });
+        }
+
+        function checkDuplicateOnBlur(type, inputEl) {
+            if (currentEditId > 0 || !inputEl) return;
+            var val = (inputEl.value || '').replace(/[-\u2013\u2014]/g, '').trim();
+            if (val.length < 8) return;
+            if (inputEl.dataset.lastCheckedVal === val) return;
+            inputEl.dataset.lastCheckedVal = val;
+
+            var checkUrl = 'api/fetch-metadata.php?action=check_local&type=' + encodeURIComponent(type) + '&identifier=' + encodeURIComponent(val) + '&exclude_id=' + encodeURIComponent(currentEditId);
+            fetch(checkUrl, {
+                headers: { 'Accept': 'application/json' }
+            })
+            .then(function(res) { return res.json(); })
+            .then(function(json) {
+                if (json && json.status === 'success' && json.local_match && json.local_match.exists) {
+                    showDuplicateModal(type, val, json.local_match);
+                }
+            })
+            .catch(function() {});
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeDuplicateModal();
+            }
+        });
 
         function escapeHtml(str) {
             if (!str) return '';
@@ -1501,7 +1855,7 @@
                     if (langCode === 'en' || langCode === 'eng') langKeywords.push('english', 'eng');
                     else if (langCode === 'ms' || langCode === 'may' || langCode === 'zsm' || langCode === 'malay') langKeywords.push('bahasa malaysia', 'melayu', 'zsm', 'may');
                     else if (langCode === 'zh' || langCode === 'chi' || langCode === 'zho') langKeywords.push('chinese', 'chi');
-                    else if (langCode === 'ta' || langCode === 'tam') langKeywords.push('tamil', 'tam');
+                    else if (langCode === 'ta' || langCode === 'tam') langKeywords.push('chinese', 'tam');
                     else if (langCode === 'ar' || langCode === 'ara') langKeywords.push('arabic', 'ara');
                     selectMatchingOption(langEl, langKeywords, 'oth');
                 } else {
@@ -1536,7 +1890,6 @@
                 }
                 coverWrap.style.display = 'block';
 
-                // Attempt client-side DataTransfer file attachment if possible
                 try {
                     fetch(data.thumbnail)
                     .then(function(res) { return res.ok ? res.blob() : null; })
@@ -1549,12 +1902,8 @@
                             fileInput.files = dt.files;
                         }
                     })
-                    .catch(function() {
-                        // Silently fallback to server-side remote_cover_url download
-                    });
-                } catch(e) {
-                    // Fallback to server-side download
-                }
+                    .catch(function() {});
+                } catch(e) {}
             } else if (coverWrap) {
                 if (remoteCoverInput) remoteCoverInput.value = '';
                 coverWrap.style.display = 'none';
@@ -1575,7 +1924,7 @@
             triggerButton.disabled = true;
             triggerButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> Fetching...';
 
-            var apiUrl = 'api/fetch-metadata.php?type=' + encodeURIComponent(type) + '&identifier=' + encodeURIComponent(trimmed);
+            var apiUrl = 'api/fetch-metadata.php?type=' + encodeURIComponent(type) + '&identifier=' + encodeURIComponent(trimmed) + '&exclude_id=' + encodeURIComponent(currentEditId);
 
             fetch(apiUrl, {
                 method: 'GET',
@@ -1589,36 +1938,49 @@
                 });
             })
             .then(function(res) {
+                var localMatch = (res.data && res.data.local_match && res.data.local_match.exists) ? res.data.local_match : null;
+
                 if (!res.ok || res.data.status !== 'success') {
+                    if (localMatch) {
+                        showDuplicateModal(type, trimmed, localMatch);
+                    }
                     var errorMsg = (res.data && res.data.message) ? res.data.message : 'Error fetching metadata (HTTP ' + res.status + ')';
-                    showAlert('danger', escapeHtml(errorMsg));
+                    showAlert(localMatch ? 'warning' : 'danger', escapeHtml(errorMsg));
                     return;
                 }
 
                 var item = res.data.data;
-                populateFormWithData(item);
+                if (item) {
+                    populateFormWithData(item);
+                }
+
+                if (localMatch) {
+                    showDuplicateModal(type, trimmed, localMatch);
+                }
 
                 var providerBadge = '';
-                if (item.provider === 'google_books') {
+                if (item && item.provider === 'google_books') {
                     providerBadge = ' <span class="badge" style="background:#1a73e8;color:#fff;font-size:0.75rem;padding:3px 8px;border-radius:4px;font-weight:600;"><i class="fa-brands fa-google me-1"></i>Google Books API</span>';
-                } else if (item.provider === 'open_library') {
+                } else if (item && item.provider === 'open_library') {
                     providerBadge = ' <span class="badge" style="background:#0284c7;color:#fff;font-size:0.75rem;padding:3px 8px;border-radius:4px;font-weight:600;"><i class="fa-solid fa-book-open me-1"></i>Open Library</span>';
-                } else if (item.provider === 'pnm_polaris') {
+                } else if (item && item.provider === 'pnm_polaris') {
                     providerBadge = ' <span class="badge" style="background:#0f766e;color:#fff;font-size:0.75rem;padding:3px 8px;border-radius:4px;font-weight:600;"><i class="fa-solid fa-landmark me-1"></i>PNM Polaris</span>';
-                } else if (item.provider === 'crossref') {
+                } else if (item && item.provider === 'crossref') {
                     providerBadge = ' <span class="badge" style="background:#7c3aed;color:#fff;font-size:0.75rem;padding:3px 8px;border-radius:4px;font-weight:600;"><i class="fa-solid fa-newspaper me-1"></i>Crossref API</span>';
-                } else if (item.provider) {
+                } else if (item && item.provider) {
                     providerBadge = ' <span class="badge badge-secondary ms-1" style="font-size:0.75rem;padding:3px 8px;border-radius:4px;">' + escapeHtml(item.provider) + '</span>';
                 }
 
-                var successMsg = '<strong>Metadata Auto-Populated!</strong> Successfully retrieved record for <em>' + escapeHtml(item.title) + '</em>';
-                if (providerBadge) {
-                    successMsg += ' &bull; Source: ' + providerBadge;
+                if (item && item.title) {
+                    var successMsg = '<strong>Metadata Auto-Populated!</strong> Successfully retrieved record for <em>' + escapeHtml(item.title) + '</em>';
+                    if (providerBadge) {
+                        successMsg += ' &bull; Source: ' + providerBadge;
+                    }
+                    if (item.call_number) {
+                        successMsg += ' &bull; Call Number: <span class="badge badge-primary font-bold ms-1">' + escapeHtml(item.call_number) + '</span>';
+                    }
+                    showAlert('success', successMsg);
                 }
-                if (item.call_number) {
-                    successMsg += ' &bull; Call Number: <span class="badge badge-primary font-bold ms-1">' + escapeHtml(item.call_number) + '</span>';
-                }
-                showAlert('success', successMsg);
             })
             .catch(function(err) {
                 showAlert('danger', 'Network request failed: ' + escapeHtml(err.message || 'Unable to connect to metadata service.'));
@@ -1668,16 +2030,25 @@
 
         // Live sanitize ISBN and ISSN inputs on blur and form submit
         if (inputIsbn) {
-            inputIsbn.addEventListener('blur', function() { cleanHyphensInput(inputIsbn); });
+            inputIsbn.addEventListener('blur', function() {
+                cleanHyphensInput(inputIsbn);
+                checkDuplicateOnBlur('isbn', inputIsbn);
+            });
         }
         if (inputIssn) {
-            inputIssn.addEventListener('blur', function() { cleanHyphensInput(inputIssn); });
+            inputIssn.addEventListener('blur', function() {
+                cleanHyphensInput(inputIssn);
+                checkDuplicateOnBlur('issn', inputIssn);
+            });
         }
 
         var extraIsbnInputs = document.querySelectorAll('input[name^="isbn_"], input[name^="isbn1_"], input[name^="isbn3_"]');
         for (var idx = 0; idx < extraIsbnInputs.length; idx++) {
             (function(el) {
-                el.addEventListener('blur', function() { cleanHyphensInput(el); });
+                el.addEventListener('blur', function() {
+                    cleanHyphensInput(el);
+                    checkDuplicateOnBlur('isbn', el);
+                });
             })(extraIsbnInputs[idx]);
         }
 
